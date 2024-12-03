@@ -1,12 +1,12 @@
 #!/bin/bash
 
-# Function to handle errors
+
 error_exit() {
     echo "$1" 1>&2
     exit 1
 }
 
-# Input validation
+
 if [ -z "$1" ]; then
     error_exit "Error: Please provide the Jenkins version as an argument (e.g., 2.361.1)."
 fi
@@ -18,7 +18,7 @@ fi
 JENKINS_VERSION=$1
 OS_TYPE=$2
 
-# Install Java (OpenJDK 11) based on OS
+
 install_java() {
     echo "Installing Java..."
     if [ "$OS_TYPE" == "ubuntu" ] || [ "$OS_TYPE" == "debian" ]; then
@@ -34,25 +34,22 @@ install_java() {
     fi
 }
 
-# Install Jenkins based on OS
+
 install_jenkins() {
     echo "Installing Jenkins version $JENKINS_VERSION..."
     if [ "$OS_TYPE" == "ubuntu" ] || [ "$OS_TYPE" == "debian" ]; then
-        # Add Jenkins repository and install Jenkins
         sudo apt update && sudo apt install -y curl gnupg || error_exit "Error: Failed to install dependencies on Ubuntu/Debian."
         curl -fsSL https://pkg.jenkins.io/debian/jenkins.io.key | sudo tee /usr/share/keyrings/jenkins-keyring.asc > /dev/null || error_exit "Error: Failed to add Jenkins key."
         echo "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian binary/" | sudo tee /etc/apt/sources.list.d/jenkins.list > /dev/null
         sudo apt update && sudo apt install -y jenkins || error_exit "Error: Failed to install Jenkins on Ubuntu/Debian."
         sudo systemctl enable jenkins && sudo systemctl start jenkins
     elif [ "$OS_TYPE" == "centos" ] || [ "$OS_TYPE" == "rhel" ]; then
-        # Add Jenkins repository and install Jenkins
         sudo yum install -y wget || error_exit "Error: Failed to install wget on CentOS/RHEL."
         sudo wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo || error_exit "Error: Failed to add Jenkins repository."
         sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key || error_exit "Error: Failed to add Jenkins key."
         sudo yum install -y jenkins || error_exit "Error: Failed to install Jenkins on CentOS/RHEL."
         sudo systemctl enable jenkins && sudo systemctl start jenkins
     elif [ "$OS_TYPE" == "macos" ]; then
-        # Install Jenkins via Homebrew
         brew install jenkins-lts || error_exit "Error: Failed to install Jenkins on macOS."
         echo "To start Jenkins, use: 'brew services start jenkins-lts'"
     elif [ "$OS_TYPE" == "windows" ]; then
@@ -64,7 +61,6 @@ install_jenkins() {
     fi
 }
 
-# Display Jenkins status
 jenkins_status() {
     echo "Checking Jenkins status..."
     if [ "$OS_TYPE" == "ubuntu" ] || [ "$OS_TYPE" == "debian" ] || [ "$OS_TYPE" == "centos" ] || [ "$OS_TYPE" == "rhel" ]; then
@@ -76,7 +72,6 @@ jenkins_status() {
     fi
 }
 
-# Main script execution
 echo "Starting Jenkins installation process..."
 
 install_java
