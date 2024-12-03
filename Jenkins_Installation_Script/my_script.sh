@@ -2,7 +2,7 @@
 
 
 error_exit() {
-    echo "$1" 1>&2
+    echo "$1" 
     exit 1
 }
 
